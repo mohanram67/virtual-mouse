@@ -1,0 +1,12 @@
+opencv-python
+mediapipe
+numpy
+pyautogui
+screen-brightness-control
+pillow
+speechrecognition
+pyttsx3
+wikipedia
+tk
+requests
+pyinstaller
