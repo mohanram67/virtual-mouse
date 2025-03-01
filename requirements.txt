@@ -11,4 +11,4 @@ tk
 requests
 pyinstaller
 streamlit
-pyaudio
+sounddevice
