@@ -18,8 +18,6 @@ import webbrowser
 import subprocess
 import smtplib
 import requests
-import os
-port = int(os.environ.get("PORT", 8501))  # Default to 8501 if PORT is not set
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -197,24 +195,72 @@ class GestureVoiceApp:
             Thread(target=self.run_assistant).start()
 
     def run_assistant(self):
-        while self.assistant_running:
-            command = take_command()
-            if command == "none":
-                continue
-            
-            # Check commands
-            if "open" in command:
-                open_website(command)
-            elif "wikipedia" in command:
-                command = command.replace("wikipedia", "")
-                results = wikipedia.summary(command, sentences=2)
-                speak(results)
-            elif "time" in command:
-                speak(f"The current time is {datetime.datetime.now().strftime('%H:%M:%S')}")
-            elif "date" in command:
-                speak(f"Today's date is {datetime.datetime.now().strftime('%Y-%m-%d')}")
-            else:
-                speak("Sorry, I don't understand the command.")
+     while self.assistant_running:
+        command = take_command()
+        if command == "none":
+            continue
+
+        # System Control
+        if "shutdown" in command:
+            speak("Shutting down the system.")
+            os.system("shutdown /s /t 5")
+
+        elif "restart" in command:
+            speak("Restarting the system.")
+            os.system("shutdown /r /t 5")
+
+        elif "open notepad" in command:
+            speak("Opening Notepad")
+            subprocess.Popen("notepad.exe")
+
+        elif "open calculator" in command:
+            speak("Opening Calculator")
+            subprocess.Popen("calc.exe")
+
+        elif "volume up" in command:
+            pyautogui.press("volumeup")
+            speak("Increasing volume")
+
+        elif "volume down" in command:
+            pyautogui.press("volumedown")
+            speak("Decreasing volume")
+
+        # Search & Automation
+        elif "search" in command:
+            query = command.replace("search", "")
+            speak(f"Searching for {query} on Google")
+            webbrowser.open(f"https://www.google.com/search?q={query}")
+
+        elif "weather" in command:
+            city = "New Delhi"  # Change to your location or fetch dynamically
+            url = f"http://api.weatherapi.com/v1/current.json?key=YOUR_API_KEY&q={city}"
+            response = requests.get(url).json()
+            temp = response["current"]["temp_c"]
+            speak(f"The current temperature in {city} is {temp} degrees Celsius")
+
+        # Entertainment & Misc
+        elif "play music" in command:
+            speak("Playing music")
+            webbrowser.open("https://open.spotify.com/")
+
+        elif "news" in command:
+            speak("Fetching latest news")
+            webbrowser.open("https://news.google.com/")
+
+        elif "set reminder" in command:
+            speak("What should I remind you about?")
+            reminder = take_command()
+            speak(f"Reminder set for: {reminder}")
+            with open("reminders.txt", "a") as file:
+                file.write(f"{datetime.datetime.now()} - {reminder}\n")
+
+        elif "stop" in command:
+            speak("Stopping the assistant.")
+            self.assistant_running = False
+            break
+
+        else:
+            speak("Sorry, I don't understand the command.")
 
 if __name__ == "__main__":
     root = tk.Tk()
