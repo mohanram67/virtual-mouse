@@ -18,6 +18,8 @@ import webbrowser
 import subprocess
 import smtplib
 import requests
+import os
+port = int(os.environ.get("PORT", 8501))  # Default to 8501 if PORT is not set
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
